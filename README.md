@@ -2,7 +2,7 @@
 2. register ✓
 3. logout ✓
 4. create_todo ✓
-5. read_todo
+5. my_profile ✓
 6. update_todo ✓
 7. delete_todo ✓
 8. todo_list ✓
@@ -10,4 +10,3 @@
 10. unblock_user ✓
 11. block_admin ✓
 12. unblock_admin ✓
-13. my_profile ✓
