@@ -36,7 +36,7 @@ def register_user(username, password):
 
 @commit
 def create_todo_service(name, type, user_id):
-    todo = models.Todo(name=name, type=models.TodoType[type], user_id=user_id)  # use models.TodoType[type]
+    todo = models.Todo(name=name, type=models.TodoType[type], user_id=user_id)
     db.insert_into_todo_item(todo)
     return utils.ResponseDate("Todo created successfully")
 
@@ -44,7 +44,7 @@ def create_todo_service(name, type, user_id):
 def get_user_id(username):
     user_data = db.get_user_by_username(username)
     if user_data:
-        return user_data[0]  # user_data[0] should be the user's ID
+        return user_data[0]
     else:
         return None
 
@@ -83,26 +83,43 @@ def get_all_todos(user_id):
 
 @commit
 def block_user(username):
-    db.set_user_status(username, "BLOCKED")
-    return utils.ResponseDate("User blocked successfully")
+    if db.set_user_status(username, "BLOCKED"):
+        return utils.ResponseDate("User blocked successfully")
+    else:
+        return utils.ResponseDate("Failed to block user", False)
 
 
 @commit
 def unblock_user(username):
     db.unblock_user(username)
-    return utils.ResponseDate("User unblocked successfully")
+    return (utils.ResponseDate("User unblocked successfully"))
 
 
 @commit
-def block_admin(username):
-    db.set_user_status(username, "BLOCKED")
-    return utils.ResponseDate("Admin blocked successfully")
+def block_admin(admin_username, blocker_username):
+    blocker_role = db.get_user_role(blocker_username)
+    if blocker_role in ["ADMIN", "SUPER_ADMIN"]:
+        if db.set_user_status(admin_username, "BLOCKED"):
+            return utils.ResponseDate("Admin blocked successfully")
+        else:
+            return utils.ResponseDate("Failed to block admin", False)
+    else:
+        return utils.ResponseDate("Permission denied", False)
 
 
 @commit
-def unblock_admin(username):
-    db.set_user_status(username, "ACTIVE")
-    return utils.ResponseDate("Admin unblocked successfully")
+def unblock_admin(admin_username, unblocker_username):
+    unblocker_role = db.get_user_role(unblocker_username)
+    if unblocker_role in ["ADMIN", "SUPER_ADMIN"]:
+        if db.set_user_status(admin_username, "IN_ACTIVE"):
+            if db.reset_login_try_count(admin_username):
+                return utils.ResponseDate("Admin unblocked and login try count reset successfully")
+            else:
+                return utils.ResponseDate("Failed to reset login try count", False)
+        else:
+            return utils.ResponseDate("Failed to unblock admin", False)
+    else:
+        return utils.ResponseDate("Permission denied", False)
 
 
 @commit

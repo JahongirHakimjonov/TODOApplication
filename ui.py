@@ -41,7 +41,7 @@ def create_todo():
              "4": models.TodoType.OTHER.name}
     choice = input("choice: ")
     type = types[choice]
-    user_id = service.get_user_id(logged_in_user)  # fetch the user's ID
+    user_id = service.get_user_id(logged_in_user)
     response = service.create_todo_service(name=name, type=type, user_id=user_id)
     utils.print_response(response)
 
@@ -60,7 +60,7 @@ def delete_todo():
         print_error("Todo not found")
     elif not todo.completed:
         print_error("Todo not completed")
-    elif todo.username != logged_in_user:  # use the correct attribute name
+    elif todo.username != logged_in_user:
         print_error("You can only delete your own todos")
     else:
         response = service.delete_todo_by_id(id)
@@ -70,7 +70,7 @@ def delete_todo():
 
 def todo_list():
     global logged_in_user
-    user_id = service.get_user_id(logged_in_user)  # fetch the user's ID
+    user_id = service.get_user_id(logged_in_user)
     response = service.get_all_todos(user_id)
     if response.success:
         for todo in response.data:
@@ -93,14 +93,16 @@ def unblock_user():
 
 
 def block_admin():
-    username = input("Admin username to block: ")
-    response = service.block_admin(username)
+    admin_username = input("Admin username to block: ")
+    blocker_username = input("Your username: ")
+    response = service.block_admin(admin_username, blocker_username)
     utils.print_response(response)
 
 
 def unblock_admin():
-    username = input("Admin username to unblock: ")
-    response = service.unblock_admin(username)
+    admin_username = input("Admin username to unblock: ")
+    unblocker_username = input("Your username: ")
+    response = service.unblock_admin(admin_username, unblocker_username)
     utils.print_response(response)
 
 
