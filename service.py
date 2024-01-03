@@ -7,9 +7,9 @@ from db import commit
 @commit
 def login_user(username, password):
     user_data = db.get_user_by_username(username)
-    user = models.User.from_tuple(user_data)
-    if not user:
+    if user_data is None:
         return utils.ResponseDate("User Not Found", False)
+    user = models.User.from_tuple(user_data)
     if user.status == "BLOCKED":
         return utils.ResponseDate("Bad Credintials", False)
     if user.login_try_count >= 3:
@@ -30,7 +30,7 @@ def register_user(username, password):
         return utils.ResponseDate("Username already exists", False)
 
     hashed_password = utils.encode_password(password)
-    db.insert_into_user(username, hashed_password, models.UserStatus.ACTIVE.value, models.UserRole.USER.value)
+    db.insert_into_user(username, hashed_password, models.UserStatus.IN_ACTIVE.value, models.UserRole.USER.value)
     return utils.ResponseDate("User registered successfully")
 
 
@@ -41,14 +41,6 @@ def create_todo_service(name, type, user_id):
     return utils.ResponseDate("Todo created successfully")
 
 
-def get_user_id(username):
-    user_data = db.get_user_by_username(username)
-    if user_data:
-        return user_data[0]
-    else:
-        return None
-
-
 @commit
 def complete_todo_by_id(id):
     if db.complete_todo_by_id(id):
@@ -57,9 +49,24 @@ def complete_todo_by_id(id):
         return utils.ResponseDate("Failed to complete todo", False)
 
 
-@commit
 def get_todo_by_id(id):
     todo_data = db.get_todo_by_id(id)
+    if todo_data is None:
+        return None
+    return models.Todo.from_tuple(todo_data)
+
+
+def get_user_id(username):
+    user_data = db.get_user_by_username(username)
+    if user_data is None:
+        return None
+    user = models.User.from_tuple(user_data)
+    return user.id
+
+
+@commit
+def get_todo_by_username():
+    todo_data = db.get_todo_by_username()
     if todo_data:
         return models.Todo.from_tuple(todo_data)
     else:

@@ -4,7 +4,7 @@
 4. create_todo ✓
 5. my_profile ✓
 6. update_todo ✓
-7. delete_todo ✓
+7. delete_todo 
 8. todo_list ✓
 9. block_user ✓
 10. unblock_user ✓

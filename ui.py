@@ -17,6 +17,7 @@ def login():
         menu(response.data['role'])
     else:
         print_error(response.data)
+        menu("guest")
 
 
 def register():
@@ -55,17 +56,19 @@ def complete_todo():
 def delete_todo():
     global logged_in_user
     id = input("Enter the id of the todo to delete: ")
+
     todo = service.get_todo_by_id(id)
+
     if todo is None:
         print_error("Todo not found")
     elif not todo.completed:
         print_error("Todo not completed")
-    elif todo.username != logged_in_user:
+    elif todo.user_id != service.get_user_id(logged_in_user):
         print_error("You can only delete your own todos")
     else:
         response = service.delete_todo_by_id(id)
         utils.print_response(response)
-    print(f"logged_in_user is still: {logged_in_user}")
+        print(f"Todo with id {id} deleted successfully for user {logged_in_user}")
 
 
 def todo_list():

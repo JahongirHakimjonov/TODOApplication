@@ -109,9 +109,18 @@ def insert_into_todo_item(todo: models.Todo):
     cursor.execute(insert_todo_sql, (todo.name, todo.type.name, todo.user_id))
 
 
+@commit
 def get_todo_by_id(id):
     get_todo_sql = """SELECT * FROM todos WHERE id = ?"""
     cursor.execute(get_todo_sql, (id,))
+    todo_data = cursor.fetchone()
+    return todo_data
+
+
+@commit
+def get_todo_by_username(username):
+    get_todo_sql = """SELECT * FROM todos WHERE username = ?"""
+    cursor.execute(get_todo_sql, (username,))
     todo_data = cursor.fetchone()
     return todo_data
 

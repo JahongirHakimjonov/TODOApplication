@@ -59,12 +59,13 @@ class Todo:
 
     @classmethod
     def from_tuple(cls, args):
-        return cls(id=args[0],
-                   name=args[1],
-                   type=args[2],
-                   user_id=args[3],
-                   completed=args[4]
-                   )
+        return cls(
+            id=args[0],
+            name=args[1],
+            type=args[2],
+            user_id=args[3],
+            completed=args[4]
+        )
 
     def __repr__(self):
-        return f"{self.name}:{self.type}:{self.user_id}:{self.completed}"
+        return f"Todo(id={self.id}, name='{self.name}', type='{self.type}', user_id={self.user_id}, completed={self.completed})"
