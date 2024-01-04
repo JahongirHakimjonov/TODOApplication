@@ -10,3 +10,18 @@
 10. unblock_user ✓
 11. block_admin ✓
 12. unblock_admin ✓
+13. delete_user 
+14. add_admin 
+15. remove_admin 
+
+SUPER_ADMIN:
+
+nickname = jahongir, password = 777
+
+ADMIN:
+
+nickname = admin, password = 777
+
+USER:
+
+nickname = user, password = 777

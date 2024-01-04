@@ -55,30 +55,48 @@ def complete_todo():
 
 def delete_todo():
     global logged_in_user
-    id = input("Enter the id of the todo to delete: ")
+    try:
+        id = int(input("Enter the id of the todo to delete: "))
+    except ValueError:
+        print_error("Invalid id. Please enter a valid integer.")
+        return
 
     todo = service.get_todo_by_id(id)
 
     if todo is None:
         print_error("Todo not found")
-    elif not todo.completed:
+        return
+
+    if not todo.completed:
         print_error("Todo not completed")
-    elif todo.user_id != service.get_user_id(logged_in_user):
+        return
+
+    logged_in_user_id = service.get_user_id(logged_in_user)
+    print(f"Logged in user ID: {logged_in_user_id}")
+    print(f"Todo user ID: {todo.user_id}")
+
+    if todo.user_id != logged_in_user_id:
         print_error("You can only delete your own todos")
-    else:
-        response = service.delete_todo_by_id(id)
-        utils.print_response(response)
-        print(f"Todo with id {id} deleted successfully for user {logged_in_user}")
+        return
+
+    response = service.delete_todo_by_id(id)
+    utils.print_response(response)
+    print(f"Todo with id {id} deleted successfully for user {logged_in_user}")
 
 
 def todo_list():
     global logged_in_user
+    if logged_in_user is None:
+        print_error("No user is currently logged in")
+        return
+
     user_id = service.get_user_id(logged_in_user)
     response = service.get_all_todos(user_id)
+
     if response.success:
-        for todo in response.data:
-            print_massage(
-                f"ID: {todo.id}, Name: {todo.name}, Type: {models.TodoType[todo.type].name}, Completed: {str(todo.completed).lower()}")
+        todos = response.data
+        for todo in todos:
+            print_massage(f"ID: {todo.id}, Name: {todo.name}, Type: {todo.type}, Completed: {todo.completed}")
     else:
         print_error(response.data)
 
@@ -160,6 +178,7 @@ def menu(role="guest"):
         match choice:
             case "login":
                 login()
+                print(logged_in_user)
             case "register":
                 register()
             case "logout":

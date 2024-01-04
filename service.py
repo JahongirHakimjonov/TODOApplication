@@ -52,14 +52,14 @@ def complete_todo_by_id(id):
 def get_todo_by_id(id):
     todo_data = db.get_todo_by_id(id)
     if todo_data is None:
-        return None
+        raise ValueError(f"No todo found with id: {id}")
     return models.Todo.from_tuple(todo_data)
 
 
 def get_user_id(username):
     user_data = db.get_user_by_username(username)
     if user_data is None:
-        return None
+        raise ValueError(f"No user found with username: {username}")
     user = models.User.from_tuple(user_data)
     return user.id
 

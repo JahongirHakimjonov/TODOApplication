@@ -25,7 +25,7 @@ def commit(func):
 
 create_user_table_sql = """
     create table if not exists users(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY,
         username varchar(40) unique not null,
         password varchar(60) not null,
         status varchar(20) not null,
@@ -35,7 +35,7 @@ create_user_table_sql = """
 """
 create_todo_sql = """
     create table if not exists todos(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY,
         name varchar(30) not null,
         type varchar(20) not null,
         completed bool default false,
@@ -60,7 +60,11 @@ def create_todo_init():
     insert_todo_sql = """
     insert into todos(name, type,user_id) values (?,?,?);
     """
-    cursor.execute(insert_todo_sql, ('Study English', "STUDY", 1))
+    cursor.execute(insert_todo_sql, ('Study English', "STUDY", 2))
+    cursor.execute(insert_todo_sql, ('Study Python', "STUDY", 2))
+    cursor.execute(insert_todo_sql, ('Study Java', "STUDY", 2))
+    cursor.execute(insert_todo_sql, ('Study C++', "STUDY", 2))
+    cursor.execute(insert_todo_sql, ('Study C#', "STUDY", 2))
 
 
 def increase_user_try_count(username):
@@ -68,9 +72,8 @@ def increase_user_try_count(username):
     cursor.execute(increase_try_count_sql, (username,))
 
 
-def get_user_by_username(username: str):
-    get_user_sql = "select id, username, password, status, role, login_try_count from users where username=?"
-    cursor.execute(get_user_sql, (username,))
+def get_user_by_username(username):
+    cursor.execute("SELECT * FROM users WHERE username=?", (username,))
     user_data = cursor.fetchone()
     return user_data
 
@@ -111,9 +114,10 @@ def insert_into_todo_item(todo: models.Todo):
 
 @commit
 def get_todo_by_id(id):
-    get_todo_sql = """SELECT * FROM todos WHERE id = ?"""
-    cursor.execute(get_todo_sql, (id,))
+    cursor.execute("SELECT * FROM todos WHERE id=?", (id,))
     todo_data = cursor.fetchone()
+    if todo_data is None:
+        raise ValueError(f"No todo found with id: {id}")
     return todo_data
 
 
@@ -175,9 +179,4 @@ def set_user_status_inactive(username):
     cursor.execute("UPDATE users SET status = ? WHERE username = ?", (models.UserStatus.IN_ACTIVE.value, username))
 
 # if __name__ == '__main__':
-# init()
-# create_todo_init()
-
-# create_user_with_role("new_admin", "password", models.UserRole.ADMIN.value)
-# create_user_with_role("jahongir", "777", models.UserRole.SUPER_ADMIN.value)
-# create_user_with_role("krinj", "777", models.UserRole.USER.value)
+#     init()
