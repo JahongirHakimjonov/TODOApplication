@@ -16,7 +16,7 @@
 
 SUPER_ADMIN:
 
-nickname = jahongir, password = 777
+nickname = superadmin, password = 777
 
 ADMIN:
 
