@@ -48,7 +48,11 @@ def create_todo():
 
 
 def complete_todo():
-    id = input("Todo id to complete: ")
+    try:
+        id = int(input("Todo id to complete: "))
+    except ValueError:
+        print_error("Invalid id. Please enter a valid integer.")
+        return
     response = service.complete_todo_by_id(id)
     utils.print_response(response)
 
@@ -147,18 +151,64 @@ def my_profile():
     utils.print_response(response)
 
 
+def delete_account():
+    global logged_in_user
+    if logged_in_user is None:
+        print_error("No user is currently logged in")
+        return
+
+    username = input("Enter your username: ")
+    password = input("Enter your password: ")
+
+    # Verify the entered credentials
+    response = service.login_user(username, password)
+    if not response.success:
+        print_error("Invalid credentials")
+        return
+
+    # Delete the user's account
+    response = service.delete_user(username)
+    if response.success:
+        print_success("Account deleted successfully")
+        logged_in_user = None
+    else:
+        print_error(response.data)
+
+
+def add_admin():
+    username = input("Enter the username of the user to promote to admin: ")
+    response = service.check_user_admin_status(username)
+    if not response.success:
+        print_error(response.data)
+        return
+
+    response = service.promote_to_admin(username)
+    print_response(response)
+
+
+def remove_admin():
+    username = input("Enter the username of the admin to demote: ")
+    response = service.check_user_role_status(username)
+    if not response.success:
+        print_error(response.data)
+        return
+
+    response = service.demote_from_admin(username)
+    print_response(response)
+
+
 def menu(role="guest"):
     while True:
         guest_menu = ["=> login", "=> register", "=> quit"]
         user_menu = ["=> logout", "=> create_todo", "=> complete_todo", "=> delete_todo", "=> todo_list",
-                     "=> my_profile",
+                     "=> my_profile", "=> delete_account",
                      "=> quit"]
         admin_menu = ["=> logout", "=> create_todo", "=> complete_todo", "=> delete_todo", "=> todo_list",
                       "=> block_user",
-                      "=> unblock_user", "=> my_profile", "=> quit"]
+                      "=> unblock_user", "=> my_profile", "=> delete_account", "=> quit"]
         super_admin_menu = ["=> logout", "=> create_todo", "=> complete_todo", "=> delete_todo", "=> todo_list",
                             "=> block_user", "=> unblock_user", "=> block_admin", "=> unblock_admin", "=> my_profile",
-                            "=> quit"]
+                            "=> delete_account", "=> add_admin", "=> remove_admin", "=> quit"]
 
         if role == "guest":
             for item in guest_menu:
@@ -201,6 +251,12 @@ def menu(role="guest"):
                 unblock_admin()
             case "my_profile":
                 my_profile()
+            case "delete_account":
+                delete_account()
+            case "add_admin":
+                add_admin()
+            case "remove_admin":
+                remove_admin()
             case "quit":
                 exit(0)
             case _:

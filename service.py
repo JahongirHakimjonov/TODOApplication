@@ -140,3 +140,53 @@ def get_my_profile(username):
     user_data = db.current_user(username)
     user = models.User.from_tuple(user_data)
     return utils.ResponseDate({"ID": user.id, "username": user.username, "status": user.status, "role": user.role})
+
+
+@commit
+def delete_user(username):
+    if db.delete_user(username):
+        return utils.ResponseDate("User deleted successfully")
+    else:
+        return utils.ResponseDate("Failed to delete user", False)
+
+
+@commit
+def promote_to_admin(username):
+    if db.promote_to_admin(username):
+        return utils.ResponseDate("User promoted to admin successfully")
+    else:
+        return utils.ResponseDate("Failed to promote user to admin", False)
+
+
+def check_user_admin_status(username):
+    user_data = db.get_user_by_username(username)
+    if user_data is None:
+        return utils.ResponseDate("User not found", False)
+
+    user = models.User.from_tuple(user_data)
+    if user.role == models.UserRole.ADMIN.value:
+        return utils.ResponseDate("User is already an admin", False)
+
+    return utils.ResponseDate("User is not an admin")
+
+
+def check_user_role_status(username):
+    user_data = db.get_user_by_username(username)
+    if user_data is None:
+        return utils.ResponseDate("User not found", False)
+
+    user = models.User.from_tuple(user_data)
+    if user.role == models.UserRole.USER.value:
+        return utils.ResponseDate("User is already an user", False)
+    elif user.role == models.UserRole.SUPER_ADMIN.value:
+        return utils.ResponseDate("User is a super admin", False)
+
+    return utils.ResponseDate("User is not an user")
+
+
+@commit
+def demote_from_admin(username):
+    if db.demote_from_admin(username):
+        return utils.ResponseDate("User demoted from admin successfully")
+    else:
+        return utils.ResponseDate("Failed to demote user from admin", False)

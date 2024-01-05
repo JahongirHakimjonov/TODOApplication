@@ -178,5 +178,24 @@ def current_user(username):
 def set_user_status_inactive(username):
     cursor.execute("UPDATE users SET status = ? WHERE username = ?", (models.UserStatus.IN_ACTIVE.value, username))
 
-# if __name__ == '__main__':
+
+@commit
+def delete_user(username):
+    cursor.execute("DELETE FROM users WHERE username = ?", (username,))
+    return cursor.rowcount > 0
+
+
+@commit
+def promote_to_admin(username):
+    cursor.execute("UPDATE users SET role = ? WHERE username = ?", (models.UserRole.ADMIN.value, username))
+    return cursor.rowcount > 0
+
+
+@commit
+def demote_from_admin(username):
+    cursor.execute("UPDATE users SET role = ? WHERE username = ?", (models.UserRole.USER.value, username))
+    return cursor.rowcount > 0
+
+if __name__ == '__main__':
 #     init()
+    create_user_with_role("super", "777", models.UserRole.SUPER_ADMIN.value)

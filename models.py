@@ -63,8 +63,9 @@ class Todo:
             id=args[0],
             name=args[1],
             type=args[2],
-            user_id=args[3],
-            completed=args[4]
+            completed=args[3],
+            user_id=args[4]
+
         )
 
     def __repr__(self):
