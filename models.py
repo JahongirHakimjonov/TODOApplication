@@ -53,9 +53,9 @@ class Todo:
     def __init__(self, id=None, name=None, user_id=None, type=None, completed=False):
         self.id = id
         self.name = name
-        self.user_id = user_id
         self.type = type
         self.completed = completed
+        self.user_id = user_id
 
     @classmethod
     def from_tuple(cls, args):
@@ -69,4 +69,4 @@ class Todo:
         )
 
     def __repr__(self):
-        return f"Todo(id={self.id}, name='{self.name}', type='{self.type}', user_id={self.user_id}, completed={self.completed})"
+        return f"Todo(id={self.id}, name='{self.name}', type='{self.type}',completed={self.completed}, user_id={self.user_id})"

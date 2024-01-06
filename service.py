@@ -190,3 +190,23 @@ def demote_from_admin(username):
         return utils.ResponseDate("User demoted from admin successfully")
     else:
         return utils.ResponseDate("Failed to demote user from admin", False)
+
+
+@commit
+def delete_todo_service(id, username):
+    todo = db.get_todo_by_id(id)
+
+    if todo is None:
+        return utils.ResponseDate("Todo not found", False)
+
+    if not todo.completed:
+        return utils.ResponseDate("Todo not completed", False)
+
+    logged_in_user_id = get_user_id(username)
+    if todo.user_id != logged_in_user_id:
+        return utils.ResponseDate("You can only delete your own todos", False)
+
+    if db.delete_todo_by_id(id):
+        return utils.ResponseDate("Todo deleted successfully")
+    else:
+        return utils.ResponseDate("Failed to delete todo", False)

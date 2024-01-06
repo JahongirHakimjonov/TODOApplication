@@ -4,6 +4,7 @@ from os.path import exists
 
 import models
 import utils
+from models import Todo
 
 db = "db.sqlite"
 while not exists(db):
@@ -112,18 +113,19 @@ def insert_into_todo_item(todo: models.Todo):
     cursor.execute(insert_todo_sql, (todo.name, todo.type.name, todo.user_id))
 
 
-@commit
 def get_todo_by_id(id):
-    cursor.execute("SELECT * FROM todos WHERE id=?", (id,))
-    todo_data = cursor.fetchone()
-    if todo_data is None:
-        raise ValueError(f"No todo found with id: {id}")
-    return todo_data
+    cursor.execute("SELECT * FROM todos WHERE id = ?", (id,))
+    row = cursor.fetchone()
+
+    if row is not None:
+        return Todo(id=row[0], name=row[1], type=row[2], completed=row[3], user_id=row[4])
+
+    return None
 
 
 @commit
 def get_todo_by_username(username):
-    get_todo_sql = """SELECT * FROM todos WHERE username = ?"""
+    get_todo_sql = """SELECT * FROM todos WHERE user_id = ?"""
     cursor.execute(get_todo_sql, (username,))
     todo_data = cursor.fetchone()
     return todo_data
@@ -196,6 +198,6 @@ def demote_from_admin(username):
     cursor.execute("UPDATE users SET role = ? WHERE username = ?", (models.UserRole.USER.value, username))
     return cursor.rowcount > 0
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
 #     init()
-    create_user_with_role("super", "777", models.UserRole.SUPER_ADMIN.value)
+#     create_user_with_role("super", "777", models.UserRole.SUPER_ADMIN.value)

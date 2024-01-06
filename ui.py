@@ -65,27 +65,10 @@ def delete_todo():
         print_error("Invalid id. Please enter a valid integer.")
         return
 
-    todo = service.get_todo_by_id(id)
-
-    if todo is None:
-        print_error("Todo not found")
-        return
-
-    if not todo.completed:
-        print_error("Todo not completed")
-        return
-
-    logged_in_user_id = service.get_user_id(logged_in_user)
-    print(f"Logged in user ID: {logged_in_user_id}")
-    print(f"Todo user ID: {todo.user_id}")
-
-    if todo.user_id != logged_in_user_id:
-        print_error("You can only delete your own todos")
-        return
-
-    response = service.delete_todo_by_id(id)
+    response = service.delete_todo_service(id, logged_in_user)
     utils.print_response(response)
-    print(f"Todo with id {id} deleted successfully for user {logged_in_user}")
+    if response.success:
+        print(f"Todo with id {id} deleted successfully for user {logged_in_user}")
 
 
 def todo_list():
