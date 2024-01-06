@@ -197,6 +197,24 @@ def remove_admin():
     print_response(response)
 
 
+def create_admin():
+    username = input("Enter the username for the new admin: ")
+    password = input("Enter the password for the new admin: ")
+    password2 = input("Re-enter the password for the new admin: ")
+    if password != password2:
+        print_error("Passwords do not match. Please try again.")
+        return
+    response = service.register_user(username, password)
+    if response.success:
+        promote_response = service.promote_to_admin(username)
+        if promote_response.success:
+            print_success("New admin created successfully")
+        else:
+            print_error(promote_response.data)
+    else:
+        print_error(response.data)
+
+
 def menu(role="guest"):
     while True:
         guest_menu = ["=> login", "=> register", "=> quit"]
@@ -208,7 +226,7 @@ def menu(role="guest"):
                       "=> unblock_user", "=> my_profile", "=> delete_account", "=> quit"]
         super_admin_menu = ["=> logout", "=> create_todo", "=> complete_todo", "=> delete_todo", "=> todo_list",
                             "=> block_user", "=> unblock_user", "=> block_admin", "=> unblock_admin", "=> my_profile",
-                            "=> delete_account", "=> add_admin", "=> remove_admin", "=> quit"]
+                            "=> delete_account", "=> add_admin", "=> remove_admin", "=> create_admin", "=> quit"]
 
         if role == "guest":
             for item in guest_menu:
@@ -257,6 +275,8 @@ def menu(role="guest"):
                 add_admin()
             case "remove_admin":
                 remove_admin()
+            case "create_admin":
+                create_admin()
             case "quit":
                 exit(0)
             case _:
