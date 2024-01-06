@@ -13,7 +13,7 @@
 13. delete_account ✓
 14. add_admin ✓
 15. remove_admin ✓
-16. new_admin
+16. new_admin ✓
 
 SUPER_ADMIN:
 
